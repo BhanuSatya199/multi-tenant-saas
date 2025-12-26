@@ -5,6 +5,7 @@ const cors = require("cors");
 const healthRoute = require("./routes/health");
 const authRoutes = require("./routes/auth");
 const tenantRoutes = require("./routes/tenants");
+const userRoutes = require("./routes/users");
 const runMigrations = require("./db/runMigrations");
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(cors({ origin: process.env.FRONTEND_URL }));
 app.use("/api", healthRoute);
 app.use("/api/auth", authRoutes);
 app.use("/api/tenants", tenantRoutes);
+app.use("/api", userRoutes);
 
 // 🔥 Run migrations ONCE at startup
 (async () => {

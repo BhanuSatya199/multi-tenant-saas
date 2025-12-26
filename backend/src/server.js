@@ -8,6 +8,7 @@ const tenantRoutes = require("./routes/tenants");
 const userRoutes = require("./routes/users");
 const projectRoutes = require("./routes/projects");
 const runMigrations = require("./db/runMigrations");
+const taskRoutes = require("./routes/tasks");
 
 const app = express();
 
@@ -19,6 +20,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/tenants", tenantRoutes);
 app.use("/api", userRoutes);
 app.use("/api", projectRoutes);
+app.use("/api", taskRoutes);
+
 
 
 // 🔥 Run migrations ONCE at startup

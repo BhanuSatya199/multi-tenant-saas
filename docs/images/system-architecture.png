@@ -1,0 +1,118 @@
+
+# System Architecture Document
+## Multi-Tenant SaaS Platform
+
+---
+
+## 1. High-Level Architecture Overview
+
+This system follows a standard three-tier architecture consisting of a frontend client, backend API server, and database. All components are containerized using Docker and orchestrated with Docker Compose.
+
+**Components:**
+- Client (Browser)
+- Frontend (React)
+- Backend API (Node.js + Express)
+- Database (PostgreSQL)
+
+All communication happens over REST APIs with JWT-based authentication.
+
+---
+
+## 2. System Architecture Diagram
+
+The high-level architecture diagram is stored at:
+
+docs/images/system-architecture.png
+
+**Description:**
+- Users interact with the React frontend via browser.
+- Frontend communicates with backend using REST APIs.
+- Backend handles authentication, authorization, and business logic.
+- PostgreSQL database stores all tenant-isolated data.
+- JWT tokens are used for secure stateless authentication.
+
+---
+
+## 3. Database Architecture & ERD
+
+The database uses a shared schema multi-tenant approach with tenant_id based isolation.
+
+The ERD diagram is stored at:
+
+docs/images/database-erd.png
+
+**Core Tables:**
+- tenants
+- users
+- projects
+- tasks
+- audit_logs
+
+All tables except super_admin users contain tenant_id to enforce isolation.
+
+---
+
+## 4. Tenant Isolation Strategy
+
+- tenant_id is extracted from JWT token.
+- All queries are filtered using tenant_id.
+- Client-provided tenant_id is never trusted.
+- super_admin bypasses tenant filtering.
+
+---
+
+## 5. API Architecture
+
+### Auth Module
+- POST /api/auth/register-tenant (public)
+- POST /api/auth/login (public)
+- GET /api/auth/me (authenticated)
+- POST /api/auth/logout (authenticated)
+
+### Tenant Module
+- GET /api/tenants/:tenantId (tenant_admin / super_admin)
+- PUT /api/tenants/:tenantId (tenant_admin / super_admin)
+- GET /api/tenants (super_admin)
+
+### User Module
+- POST /api/tenants/:tenantId/users (tenant_admin)
+- GET /api/tenants/:tenantId/users (authenticated)
+- PUT /api/users/:userId (authenticated)
+- DELETE /api/users/:userId (tenant_admin)
+
+### Project Module
+- POST /api/projects (authenticated)
+- GET /api/projects (authenticated)
+- PUT /api/projects/:projectId (tenant_admin / owner)
+- DELETE /api/projects/:projectId (tenant_admin / owner)
+
+### Task Module
+- POST /api/projects/:projectId/tasks (authenticated)
+- GET /api/projects/:projectId/tasks (authenticated)
+- PUT /api/tasks/:taskId (authenticated)
+- PATCH /api/tasks/:taskId/status (authenticated)
+- DELETE /api/tasks/:taskId (authenticated)
+
+---
+
+## 6. Security Architecture
+
+- JWT authentication with 24h expiry
+- Role-Based Access Control (RBAC)
+- Encrypted password storage
+- Audit logging for all critical actions
+
+---
+
+## 7. Deployment Architecture
+
+- Dockerized frontend, backend, and database
+- Single command startup using docker-compose up -d
+- Fixed ports for evaluation compatibility
+
+---
+
+## 8. Conclusion
+
+This architecture ensures scalability, security, and strict tenant isolation while remaining simple to deploy and manage using Docker.
+

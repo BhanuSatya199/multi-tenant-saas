@@ -2,14 +2,13 @@ const fs = require("fs");
 const path = require("path");
 const pool = require("../config/db");
 
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
 const migrationsPath = path.join(__dirname, "../../database/migrations");
 
-(async () => {
+const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+
+async function waitForDatabase() {
   let connected = false;
 
-  // 🔁 WAIT until database is ready
   while (!connected) {
     try {
       await pool.query("SELECT 1");
@@ -20,8 +19,11 @@ const migrationsPath = path.join(__dirname, "../../database/migrations");
       await sleep(3000);
     }
   }
+}
 
-  // 🚀 Run migrations AFTER DB is ready
+module.exports = async function runMigrations() {
+  await waitForDatabase();
+
   const files = fs.readdirSync(migrationsPath).sort();
 
   for (const file of files) {
@@ -29,6 +31,4 @@ const migrationsPath = path.join(__dirname, "../../database/migrations");
     await pool.query(sql);
     console.log("Executed:", file);
   }
-
-  console.log("All migrations completed");
-})();
+};

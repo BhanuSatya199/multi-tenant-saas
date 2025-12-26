@@ -1,3 +1,4 @@
+
 version: "3.8"
 
 services:
@@ -14,7 +15,9 @@ services:
       - db_data:/var/lib/postgresql/data
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: backend
     ports:
       - "5000:5000"
@@ -28,6 +31,18 @@ services:
       FRONTEND_URL: http://frontend:3000
     depends_on:
       - database
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: dockerfile
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://backend:5000/api
+    depends_on:
+      - backend
 
 volumes:
   db_data:

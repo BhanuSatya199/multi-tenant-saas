@@ -11,7 +11,7 @@
         "name": "Demo Company",
         "subdomain": "demo",
         "status": "active",
-        "subscriptionPlan": "free",
+        "subscriptionPlan": "pro",
         "admin": {
           "email": "admin@demo.com",
           "password": "Demo@123",

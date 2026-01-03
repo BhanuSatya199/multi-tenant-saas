@@ -1,9 +1,7 @@
 const pool = require("../config/db");
-
 exports.createTask = async (req, res) => {
   const { projectId } = req.params;
   const { title, description, priority = "medium" } = req.body;
-
   const projectRes = await pool.query(
     "SELECT tenant_id FROM projects WHERE id = $1",
     [projectId]
@@ -21,10 +19,8 @@ exports.createTask = async (req, res) => {
      RETURNING id, title, priority, status, created_at`,
     [projectId, tenantId, title, description, priority]
   );
-
   res.status(201).json({ success: true, data: result.rows[0] });
 };
-
 exports.listTasks = async (req, res) => {
   const { projectId } = req.params;
 
@@ -35,10 +31,8 @@ exports.listTasks = async (req, res) => {
      ORDER BY created_at DESC`,
     [projectId]
   );
-
   res.json({ success: true, data: result.rows });
 };
-
 exports.updateTask = async (req, res) => {
   const { taskId } = req.params;
   const { title, description, priority, status } = req.body;

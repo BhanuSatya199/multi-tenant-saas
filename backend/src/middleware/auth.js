@@ -2,22 +2,14 @@ const { verifyToken } = require("../utils/jwt");
 
 module.exports = (req, res, next) => {
   const header = req.headers.authorization;
-
-  if (!header) {
-    return res
-      .status(401)
-      .json({ success: false, message: "No token provided" });
-  }
-
-  const token = header.split(" ")[1];
+  if (!header)
+    return res.status(401).json({ success:false, message:"No token" });
 
   try {
-    const decoded = verifyToken(token);
-    req.user = decoded;
+    const token = header.split(" ")[1];
+    req.user = verifyToken(token);
     next();
-  } catch (err) {
-    return res
-      .status(401)
-      .json({ success: false, message: "Invalid or expired token" });
+  } catch {
+    res.status(401).json({ success:false, message:"Invalid token" });
   }
 };
